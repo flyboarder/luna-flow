@@ -46,6 +46,20 @@ class OpenAIEmbedding_Embeddings implements INode {
                 type: 'number',
                 optional: true,
                 additionalParams: true
+            },
+            {
+                label: 'Max Retries',
+                name: 'maxRetries',
+                type: 'number',
+                optional: true,
+                additionalParams: true
+            },
+            {
+                label: 'Max Concurrency',
+                name: 'maxConcurrency',
+                type: 'number',
+                optional: true,
+                additionalParams: true
             }
         ]
     }
@@ -55,6 +69,8 @@ class OpenAIEmbedding_Embeddings implements INode {
         const stripNewLines = nodeData.inputs?.stripNewLines as boolean
         const batchSize = nodeData.inputs?.batchSize as string
         const timeout = nodeData.inputs?.timeout as string
+        const maxRetries = nodeData.inputs?.maxRetries as string
+        const maxConcurrency = nodeData.inputs?.maxConcurrency as string
 
         const obj: Partial<OpenAIEmbeddingsParams> & { openAIApiKey?: string } = {
             openAIApiKey
@@ -63,7 +79,10 @@ class OpenAIEmbedding_Embeddings implements INode {
         if (stripNewLines) obj.stripNewLines = stripNewLines
         if (batchSize) obj.batchSize = parseInt(batchSize, 10)
         if (timeout) obj.timeout = parseInt(timeout, 10)
+        if (maxRetries) obj.maxRetries = parseInt(maxRetries, 10)
+        if (maxConcurrency) obj.maxConcurrency = parseInt(maxConcurrency, 10)
 
+        console.log('[OpenAIEmbeddings]: Initializing!')
         const model = new OpenAIEmbeddings(obj)
         return model
     }

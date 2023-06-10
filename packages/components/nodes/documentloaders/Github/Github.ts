@@ -41,6 +41,12 @@ class Github_DocumentLoaders implements INode {
                 optional: true
             },
             {
+                label: 'Recursive',
+                name: 'recursive',
+                type: 'boolean',
+                optional: true
+            },
+            {
                 label: 'Text Splitter',
                 name: 'textSplitter',
                 type: 'TextSplitter',
@@ -62,38 +68,30 @@ class Github_DocumentLoaders implements INode {
         const accessToken = nodeData.inputs?.accessToken as string
         const textSplitter = nodeData.inputs?.textSplitter as TextSplitter
         const metadata = nodeData.inputs?.metadata
+        const recursive = nodeData.inputs?.recursive as boolean
 
         const options: GithubRepoLoaderParams = {
             branch,
-            recursive: false,
+            recursive,
             unknown: 'warn'
         }
 
         if (accessToken) options.accessToken = accessToken
 
         const loader = new GithubRepoLoader(repoLink, options)
-        let docs = []
-
-        if (textSplitter) {
-            docs = await loader.loadAndSplit(textSplitter)
-        } else {
-            docs = await loader.load()
-        }
+        const docs = textSplitter ? await loader.loadAndSplit(textSplitter) : await loader.load()
 
         if (metadata) {
             const parsedMetadata = typeof metadata === 'object' ? metadata : JSON.parse(metadata)
-            let finaldocs = []
-            for (const doc of docs) {
-                const newdoc = {
+            return docs.map((doc) => {
+                return {
                     ...doc,
                     metadata: {
                         ...doc.metadata,
                         ...parsedMetadata
                     }
                 }
-                finaldocs.push(newdoc)
-            }
-            return finaldocs
+            })
         }
 
         return docs

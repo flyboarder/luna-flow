@@ -1,5 +1,6 @@
 import { VectorStore } from 'langchain/vectorstores/base'
 import { INode, INodeData, INodeParams, VectorStoreRetriever, VectorStoreRetrieverInput } from '../../../src/Interface'
+import { getBaseClasses } from '../../../src/utils'
 
 class VectorStoreRetriever_Retrievers implements INode {
     label: string
@@ -18,7 +19,7 @@ class VectorStoreRetriever_Retrievers implements INode {
         this.icon = 'vectorretriever.svg'
         this.category = 'Retrievers'
         this.description = 'Store vector store as retriever to be later queried by MultiRetrievalQAChain'
-        this.baseClasses = [this.type]
+        this.baseClasses = [this.type, ...getBaseClasses(VectorStore)]
         this.inputs = [
             {
                 label: 'Vector Store',

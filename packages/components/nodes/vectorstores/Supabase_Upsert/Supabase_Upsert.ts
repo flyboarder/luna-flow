@@ -80,19 +80,23 @@ class SupabaseUpsert_VectorStores implements INode {
         const embeddings = nodeData.inputs?.embeddings as Embeddings
         const output = nodeData.outputs?.output as string
 
+        console.log('🤖[SupabaseUpsert]: Initializing!')
+
         const client = createClient(supabaseProjUrl, supabaseApiKey)
 
+        console.log('🤖[SupabaseUpsert]: Processing Documents...')
         const flattenDocs = docs && docs.length ? docs.flat() : []
-        const finalDocs = []
-        for (let i = 0; i < flattenDocs.length; i += 1) {
-            finalDocs.push(new Document(flattenDocs[i]))
-        }
+        const finalDocs = flattenDocs.map((doc) => {
+            return new Document(doc)
+        })
 
+        console.log('🤖[SupabaseUpsert]: Creating Vector Store from Documents...')
         const vectorStore = await SupabaseVectorStore.fromDocuments(finalDocs, embeddings, {
             client,
             tableName: tableName,
             queryName: queryName
         })
+        console.log('🤖[SupabaseUpsert]: Vector Store Created!')
 
         if (output === 'retriever') {
             const retriever = vectorStore.asRetriever()

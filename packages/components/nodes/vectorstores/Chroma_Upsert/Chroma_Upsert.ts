@@ -68,11 +68,11 @@ class ChromaUpsert_VectorStores implements INode {
         const chromaURL = nodeData.inputs?.chromaURL as string
         const output = nodeData.outputs?.output as string
 
+        console.log('[ChromaUpsert]: Initializing!')
         const flattenDocs = docs && docs.length ? docs.flat() : []
-        const finalDocs = []
-        for (let i = 0; i < flattenDocs.length; i += 1) {
-            finalDocs.push(new Document(flattenDocs[i]))
-        }
+        const finalDocs = flattenDocs.map((doc) => {
+            return new Document(doc)
+        })
 
         const obj: {
             collectionName: string
